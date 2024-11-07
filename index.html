@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Hex Simplex</title>
+		<script src="js/math.js"></script>
+		<script src="js/noise.js"></script>
+		<script src="js/perlinNoise.js"></script>
+		<script src="js/valueNoise.js"></script>
+		<script src="js/main.js"></script>
+		<style>
+			body {
+				background-color: #333;
+				font-family: Verdana, Geneva, Tahoma, sans-serif;
+				color: white;
+				font-size: 16px;
+				overflow: hidden;
+			}
+			canvas {
+				display: block;
+				width: 100%;
+			}
+			input {
+				background-color: #646464;
+				border-radius: 0;
+				border: 0;
+				color: white;
+				font-size: 16px;
+				margin-top: 4px;
+				width: 100%;
+				height: 24px;
+			}
+			select {
+				background-color: #646464;
+				border-radius: 0;
+				border: 0;
+				color: white;
+				font-size: 16px;
+				margin-top: 4px;
+				width: 101.25%;
+				height: 24px;
+			}
+			button {
+				background-color: #646464;
+				color: white;
+				font-size: 16px;
+				width: 101.25%;
+				height: 24px;
+				border-radius: 0;
+				border: 0;
+				margin-top: 6px;
+			}
+			button:hover {
+				background-color: orange;
+			}
+			td {
+				vertical-align: top;
+				text-align: left;
+			}
+			form {
+				margin-bottom: 10px;
+				margin-left: 10px;
+			}
+			img {
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				-ms-transform: translate(-50%, -50%);
+				transform: translate(-50%, -50%);
+				height: 64px;
+			}
+			table {
+				margin-left: auto;
+				margin-right: auto;
+				width: 100%;
+			}
+			a {
+				color: orange;
+				text-decoration: none;
+			}
+			.outer_div {
+				position: absolute;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				text-align: center;
+				vertical-align: middle;
+			}
+			.inner_div {
+				padding: 0;
+				margin-left: 5%;
+				width: 90%;
+				height: 100%;
+			}
+			.header {
+				font-size: 32px;
+				margin-bottom: 10px;
+				z-index: 10;
+				margin-top: 20px;
+			}
+			.hider {
+				position: absolute;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				background-color: #333;
+				opacity: 0.5;
+			}
+			.cover {
+				position: absolute;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+			}
+			.sources {
+				padding: 0;
+				width: 100%;
+				bottom: 10px;
+				position: absolute;
+				left: 0;
+			}
+		</style>
+	</head>
+	<body onload="onLoad()">
+		<div class="outer_div">
+			<div class="inner_div">
+				<div class="header">
+					Hex Sphere Noise Generator
+					<div style="font-size: 18px;">
+						Noisify any sphere<sup>1</sup> that you need with power of math<sup>2</sup>
+					</div>
+					<div style="font-size: 16px; color: #bbbbbb; text-align: left; justify-content: center; display: flex;">
+						<ol>
+							<li>sphere is <a href="https://en.wikipedia.org/wiki/Icosahedron">icosahedron</a> here</li>
+							<li>math uses <a href="https://www.redblobgames.com/grids/hexagons/">cubic coordinates</a> (hexagonal and triangular grid)</li>
+						</ol>
+					</div>
+				</div>
+				<table style="margin-left: auto; margin-right: auto;">
+					<tr>
+						<td style="width: 80%;">
+							<canvas id="canvas"></canvas>
+						</td>
+						<td>
+							<form id="tri_size_form">
+								<label for="tri_size">Triangle Size (in hexes):</label>
+								<input id="tri_size" type="text" name="Name" size="30" value="4">
+							</form>
+							<form id="hex_size_form">
+								<label for="hex_size">Hexagon Side (in pixels):</label>
+								<input id="hex_size" type="text" name="Name" size="30" value="32">
+							</form>
+							<form id="seed_form">
+								<label for="seed">Noise Seed:</label>
+								<input id="seed" type="text" name="Name" size="30" value="0">
+							</form>
+							<form id="type_form">
+								<label for="tri_size">Triangle Size (in hexes):</label><br>
+								<select id="type">
+									<option value="perlin">Perlin</option>
+									<option value="value">Value</option>
+									<option value="smooth_value">Smooth Value</option>
+								</select>
+							</form>
+							<form id="iterations_form">
+								<label for="iterations">Iterations:</label>
+								<input id="iterations" type="text" name="Name" size="30" value="1">
+							</form>
+							<form id="gradient_form">
+								<label for="gradient">Gradient:</label><br>
+								<select id="gradient">
+									<option value="bym">Blue-Yellow-Magenta</option>
+									<option value="gs">Grayscale</option>
+									<option value="tm">Terrain Map</option>
+								</select>
+							</form>
+							<form id="grad_step_form" style="width: 100%; display: flex; flex-direction: row; justify-content: space-between; align-items: center;">
+								<label for="grad_step">Step Gradient:</label>
+								<input id="grad_step" style="text-align: right; width: 20px; height: 20px; margin-left: 0;" type="checkbox" name="Name">
+							</form>
+							<form id="debug_form" style="width: 100%; display: flex; flex-direction: row; justify-content: space-between; align-items: center;">
+								<label for="debug">Draw hexagon overlay:</label>
+								<input id="debug" style="text-align: right; width: 20px; height: 20px; margin-left: 0;" type="checkbox" name="Name">
+							</form>
+							<form id="save_img_form">
+								<label for="save_name">File Name:</label>
+								<input id="save_name" type="text" name="Name" size="30" value="noise_texture.png">
+								<button id="save_img" type="submit" value="Save">Save</button>
+							</form>
+						</td>
+					</tr>
+				</table>
+				<div class="sources">
+					<a href="https://github.com/paulevsGitch/HexPlanetNoises">View sources</a></p>
+				</div>
+			</div>
+		</div>
+		<div id="hider" class="cover">
+			<div class="hider"></div>
+			<img src="https://media.tenor.com/On7kvXhzml4AAAAj/loading-gif.gif">
+		</div>
+	</body>
+</html>
