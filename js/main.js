@@ -39,7 +39,7 @@ function onLoad() {
 		event.preventDefault();
 		hider.style.visibility = "visible";
 		var value = parseInt(triSizeText.value, 10);
-		if (value !== NaN) mainTriangleSide = value;
+		if (value !== NaN) mainTriangleSide = clamp(value, 1, 64);
 		triSizeText.value = mainTriangleSide;
 		updateFrame();
 	};
@@ -48,7 +48,7 @@ function onLoad() {
 		event.preventDefault();
 		hider.style.visibility = "visible";
 		var value = parseInt(hexSizeText.value, 10);
-		if (value !== NaN) mainHexSize = value;
+		if (value !== NaN) mainHexSize = clamp(value, 1, 512);
 		hexSizeText.value = mainHexSize;
 		updateFrame();
 	};
