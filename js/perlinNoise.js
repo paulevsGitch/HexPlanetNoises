@@ -20,6 +20,12 @@ class PerlinNoise extends Noise {
 	}
 }
 
+class RigidPerlinNoise extends PerlinNoise {
+	get(pos) {
+		return 1.0 - Math.abs(super.get(pos));
+	}
+}
+
 function _perlinUpdateTriangle(pos, triangle, lastTriangle, triangleSide, seed) {
 	var q = Math.floor(pos.q);
 	var r = Math.floor(pos.r);

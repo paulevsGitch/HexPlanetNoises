@@ -32,6 +32,18 @@ class SmoothValueNoise extends Noise {
 	}
 }
 
+class RigidValueNoise extends ValueNoise {
+	get(pos) {
+		return 1.0 - Math.abs(super.get(pos) * 2.0 - 1.0);
+	}
+}
+
+class RigidSmoothValueNoise extends SmoothValueNoise {
+	get(pos) {
+		return 1.0 - Math.abs(super.get(pos) * 2.0 - 1.0);
+	}
+}
+
 function _valueUpdateTriangle(pos, triangle, lastTriangle, hexSize, triangleSide, seed) {
 	var q = Math.floor(pos.q);
 	var r = Math.floor(pos.r);

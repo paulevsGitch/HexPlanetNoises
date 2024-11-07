@@ -183,6 +183,9 @@ function render() {
 	const noise = new FractalNoise(mainSeed, mainTriangleSide, (seed, tri) => {
 		if(mainNoiseType === "value") return new ValueNoise(seed, tri);
 		if(mainNoiseType === "smooth_value") return new SmoothValueNoise(seed, tri);
+		if(mainNoiseType === "rigid_perlin") return new RigidPerlinNoise(seed, tri);
+		if(mainNoiseType === "rigid_value") return new RigidValueNoise(seed, tri);
+		if(mainNoiseType === "rigid_smooth_value") return new RigidSmoothValueNoise(seed, tri);
 		return new PerlinNoise(seed, tri);
 	}, mainIterations);
 
