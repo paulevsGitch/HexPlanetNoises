@@ -35,7 +35,7 @@ class FractalNoise extends Noise {
 		var scale = 0.0;
 
 		for (var i = 0; i < iterations; i++) {
-			const side = triangleSide * (i + 1);
+			const side = triangleSide * (1 << i);
 			this.noises[i] = noiseConstructor(seed + i, side);
 			this.coeff[i] = 1.0 / (1.0 + i * 2.0);
 			this.scales[i] = side / triangleSide;
