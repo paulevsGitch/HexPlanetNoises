@@ -2,18 +2,13 @@ var canvas;
 var ctx;
 var hider;
 
-const mousePos = {x: 0, y: 0};
-
-const TRIANGLE_HEIGHT = Math.sqrt(3) * 0.5;
-const TAU = Math.PI * 2.0;
-
 var mainTriangleSide = 4;
 var mainHexSize = 32;
 var mainSeed = 0;
 var mainIterations = 1;
 var mainRenderDebug = false;
 var mainNoiseType = "perlin";
-var mainGradientType = "bym";
+var mainGradientType = "bmo";
 var mainGradientStep = false;
 
 function onLoad() {
@@ -169,7 +164,7 @@ function gradientGrayscale(value) {
 	return "rgb(" + value + "," + value + "," + value + ")";
 }
 
-function gradientBYM(value) {
+function gradientBMO(value) {
 	var r = clamp(value * 256.0, 0.0, 255.0);
 	var g = clamp(Math.abs(0.5 - value) * 256.0, 0.0, 255.0);
 	var b = clamp((1.0 - value) * 256.0, 0.0, 255.0);
@@ -193,7 +188,7 @@ function render() {
 
 	var normalize = mainNoiseType === "perlin";
 
-	var gradient = gradientBYM;
+	var gradient = gradientBMO;
 	if (mainGradientType === "gs") gradient = gradientGrayscale;
 	if (mainGradientType === "tm") gradient = gradientTerrain;
 

@@ -16,6 +16,18 @@ class Noise {
 	get(pos) {
 		return 0.0;
 	}
+
+	getNormal(pos) {
+		var vnq = this.get(cubeSub(pos, {q: 0.5, r: 0.0}));
+		var vpq = this.get(cubeAdd(pos, {q: 0.5, r: 0.0}));
+		var vnr = this.get(cubeSub(pos, {q: 0.0, r: 0.5}));
+		var vpr = this.get(cubeAdd(pos, {q: 0.0, r: 0.5}));
+
+		var dq = normalize({ x: 1.0, y: vpq - vnq, z: 0.0 });
+		var dr = normalize({ x: 0.0, y: vpr - vnr, z: 1.0 });
+		
+		return crossProduct(dq, dr);
+	}
 }
 
 class FractalNoise extends Noise {

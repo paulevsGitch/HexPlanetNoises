@@ -1,11 +1,7 @@
 class ValueNoise extends Noise {
 	get(pos) {
 		_valueUpdateTriangle(pos, this.triangle, this.lastTriangle, this.hexSize, this.triangleSide, this.seed);
-		var start = this.triangle[0];
-		pos.q -= start.q;
-		pos.r -= start.r;
-		pos.s -= start.s;
-		var bar = cubeToBarycentric(pos, this.lastTriangle.bottom);
+		var bar = cubeToBarycentric(cubeSub(pos, this.triangle[0]), this.lastTriangle.bottom);
 	
 		var value = 0.0;
 		for (var i = 0; i < 3; i++) {
@@ -19,11 +15,7 @@ class ValueNoise extends Noise {
 class SmoothValueNoise extends Noise {
 	get(pos) {
 		_valueUpdateTriangle(pos, this.triangle, this.lastTriangle, this.hexSize, this.triangleSide, this.seed);
-		var start = this.triangle[0];
-		pos.q -= start.q;
-		pos.r -= start.r;
-		pos.s -= start.s;
-		var bar = cubeToBarycentric(pos, this.lastTriangle.bottom);
+		var bar = cubeToBarycentric(cubeSub(pos, this.triangle[0]), this.lastTriangle.bottom);
 
 		bar = [
 			smoothMin(bar[0], smoothMin(1.0 - bar[1], 1.0 - bar[2], 0.1), 0.1),

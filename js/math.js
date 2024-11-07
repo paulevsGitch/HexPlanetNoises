@@ -1,25 +1,26 @@
-const sqrt3 = Math.sqrt(3.0);
-const sqrt3DivTwo = Math.sqrt(3.0) / 2.0;
-const sqrt3DivThree = Math.sqrt(3.0) / 3.0;
-const oneDivThree = 1.0 / 3.0;
-const twoDivThree = 2.0 / 3.0;
-const threeDivTwo = 3.0 / 2.0;
+const SQRT_3 = Math.sqrt(3.0);
+const SQRT_3_DIV_2 = Math.sqrt(3.0) / 2.0;
+const SQRT_3_DIV_3 = Math.sqrt(3.0) / 3.0;
+const ONE_DIV_THREE = 1.0 / 3.0;
+const TWO_DIV_THREE = 2.0 / 3.0;
+const THREE_DIV_TWO = 3.0 / 2.0;
+const TAU = Math.PI * 2.0;
 
 function pixelToCubeF(x, y, size) {
-	var q = (sqrt3DivThree * x - oneDivThree * y) / size;
-	var r = (twoDivThree * y) / size;
+	var q = (SQRT_3_DIV_3 * x - ONE_DIV_THREE * y) / size;
+	var r = (TWO_DIV_THREE * y) / size;
 	return axialToCube(q, r);
 }
 
 function axialToPixel(pos, size) {
-	var x = size * (sqrt3 * pos.q + sqrt3DivTwo * pos.r);
-	var y = size * (threeDivTwo * pos.r);
+	var x = size * (SQRT_3 * pos.q + SQRT_3_DIV_2 * pos.r);
+	var y = size * (THREE_DIV_TWO * pos.r);
 	return {x: x, y: y};
 }
 
 function axialToPixelS(pos, size, out) {
-	out.x = size * (sqrt3 * pos.q + sqrt3DivTwo * pos.r);
-	out.y = size * (threeDivTwo * pos.r);
+	out.x = size * (SQRT_3 * pos.q + SQRT_3_DIV_2 * pos.r);
+	out.y = size * (THREE_DIV_TWO * pos.r);
 }
 
 function axialToCube(q, r) {
@@ -32,6 +33,14 @@ function cubeSub(a, b) {
 		q: a.q - b.q,
 		r: a.r - b.r,
 		s: a.s - b.s
+	}
+}
+
+function cubeAdd(a, b) {
+	return {
+		q: a.q + b.q,
+		r: a.r + b.r,
+		s: a.s + b.s
 	}
 }
 
@@ -83,4 +92,22 @@ function smoothContrast(value, contrast) {
 	var powAlpha = Math.pow(value, contrast);
 	var powInfAlpha = Math.pow(1.0 - value, contrast);
 	return powAlpha / (powAlpha + powInfAlpha);
+}
+
+function normalize(vector) {
+	var l = vector.x * vector.x + vector.y * vector.y + vector.z * vector.z;
+	if (l > 0.0) {
+		vector.x /= l;
+		vector.y /= l;
+		vector.z /= l;
+	}
+	return vector;
+}
+
+function crossProduct(a, b) {
+	return {
+		x: a.y * b.z - a.z * b.y,
+		y: a.z * b.x - a.x * b.z,
+		z: a.x * b.y - a.y * b.x
+	};
 }
