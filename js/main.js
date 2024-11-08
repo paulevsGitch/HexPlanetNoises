@@ -10,6 +10,7 @@ var mainRenderDebug = false;
 var mainNoiseType = "perlin";
 var mainGradientType = "bmo";
 var mainGradientStep = false;
+var mainErosionStrength = 0.0;
 
 function onLoad() {
 	const triSizeText = document.getElementById("tri_size");
@@ -21,6 +22,7 @@ function onLoad() {
 	const hider = document.getElementById("hider");
 	const type = document.getElementById("type");
 	const gradient = document.getElementById("gradient");
+	const erosionStrengthText = document.getElementById("eros_str");
 
 	const updateFrame = () => {
 		hider.style.visibility = "visible";
@@ -63,6 +65,15 @@ function onLoad() {
 		var value = parseInt(iterationsText.value, 10);
 		if (value !== NaN) mainIterations = clamp(value, 1, 20);
 		iterationsText.value = mainIterations;
+		updateFrame();
+	};
+
+	document.getElementById("eros_str_form").onsubmit = (event) => {
+		event.preventDefault();
+		hider.style.visibility = "visible";
+		var value = parseFloat(erosionStrengthText.value);
+		if (value !== NaN) mainErosionStrength = clamp(value, 0.0, 20.0);
+		erosionStrengthText.value = mainErosionStrength;
 		updateFrame();
 	};
 
@@ -171,6 +182,15 @@ function gradientBMO(value) {
 	return "rgb(" + r + "," + g + "," + b + ")";
 }
 
+function getNoise(seed, side) {
+	if(mainNoiseType === "value") return new ValueNoise(seed, side);
+	if(mainNoiseType === "smooth_value") return new SmoothValueNoise(seed, side);
+	if(mainNoiseType === "rigid_perlin") return new RigidPerlinNoise(seed, side);
+	if(mainNoiseType === "rigid_value") return new RigidValueNoise(seed, side);
+	if(mainNoiseType === "rigid_smooth_value") return new RigidSmoothValueNoise(seed, side);
+	return new PerlinNoise(seed, side);
+}
+
 function render() {
 	const minX = Math.floor(axialToPixel(axialToCube(-mainTriangleSide, mainTriangleSide), mainHexSize).x);
 	const maxX = Math.floor(axialToPixel(axialToCube(mainTriangleSide * 4.5, mainTriangleSide), mainHexSize).x);
@@ -179,15 +199,8 @@ function render() {
 
 	canvas.width = maxX - minX;
 	canvas.height = maxY - minY;
-
-	const noise = new FractalNoise(mainSeed, mainTriangleSide, (seed, tri) => {
-		if(mainNoiseType === "value") return new ValueNoise(seed, tri);
-		if(mainNoiseType === "smooth_value") return new SmoothValueNoise(seed, tri);
-		if(mainNoiseType === "rigid_perlin") return new RigidPerlinNoise(seed, tri);
-		if(mainNoiseType === "rigid_value") return new RigidValueNoise(seed, tri);
-		if(mainNoiseType === "rigid_smooth_value") return new RigidSmoothValueNoise(seed, tri);
-		return new PerlinNoise(seed, tri);
-	}, mainIterations);
+	// mainErosionStrength
+	const noise = mainErosionStrength < 0.001 ? new FractalNoise(mainSeed, mainTriangleSide, getNoise, mainIterations) : new GradientErosionFractalNoise(mainSeed, mainTriangleSide, getNoise, mainIterations, mainErosionStrength);
 
 	var normalize = mainNoiseType === "perlin";
 

@@ -1,3 +1,6 @@
+const NORMAL_OFFSETS_Q = axialToCube(0.5, 0.0);
+const NORMAL_OFFSETS_R = axialToCube(0.0, 0.5);
+
 class Noise {
 	triangle = [
 		{ q: 0.0, r: 0.0, s: 0.0 },
@@ -18,10 +21,10 @@ class Noise {
 	}
 
 	getNormal(pos) {
-		var vnq = this.get(cubeSub(pos, {q: 0.5, r: 0.0}));
-		var vpq = this.get(cubeAdd(pos, {q: 0.5, r: 0.0}));
-		var vnr = this.get(cubeSub(pos, {q: 0.0, r: 0.5}));
-		var vpr = this.get(cubeAdd(pos, {q: 0.0, r: 0.5}));
+		var vnq = this.get(cubeSub(pos, NORMAL_OFFSETS_Q));
+		var vpq = this.get(cubeAdd(pos, NORMAL_OFFSETS_Q));
+		var vnr = this.get(cubeSub(pos, NORMAL_OFFSETS_R));
+		var vpr = this.get(cubeAdd(pos, NORMAL_OFFSETS_R));
 
 		var dq = normalize({ x: 1.0, y: vpq - vnq, z: 0.0 });
 		var dr = normalize({ x: 0.0, y: vpr - vnr, z: 1.0 });
@@ -66,6 +69,33 @@ class FractalNoise extends Noise {
 			this.sample.r = pos.r * this.scales[i];
 			this.sample.s = -this.sample.q - this.sample.r;
 			value += this.noises[i].get(this.sample) * this.coeff[i];
+		}
+		return value;
+	}
+}
+
+class GradientErosionFractalNoise extends FractalNoise {
+	gradient = {x: 0.0, y: 0.0};
+	erosionStrength = 0.0;
+
+	constructor (seed, triangleSide, noiseConstructor, iterations, erosionStrength) {
+		super(seed, triangleSide, noiseConstructor, iterations);
+		this.erosionStrength = erosionStrength;
+	}
+
+	get(pos) {
+		var value = 0.0;
+		gradient.x = 0.0;
+		gradient.y = 0.0;
+		for (var i = 0; i < this.iterations; i++) {
+			this.sample.q = pos.q * this.scales[i];
+			this.sample.r = pos.r * this.scales[i];
+			this.sample.s = -this.sample.q - this.sample.r;
+			var noise = this.noises[i].get(this.sample) * this.coeff[i];
+			var normal = this.noises[i].getNormal(this.sample);
+			gradient.x += normal.x;
+			gradient.y += normal.z;
+			value += noise / (1.0 + this.erosionStrength * Math.sqrt(gradient.x * gradient.x + gradient.y * gradient.y));
 		}
 		return value;
 	}
