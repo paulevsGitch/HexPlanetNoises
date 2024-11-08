@@ -1,5 +1,5 @@
-const NORMAL_OFFSETS_Q = axialToCube(0.5, 0.0);
-const NORMAL_OFFSETS_R = axialToCube(0.0, 0.5);
+const NORMAL_OFFSETS_Q = axialToCube(0.0001, 0.0000);
+const NORMAL_OFFSETS_R = axialToCube(0.0000, 0.0001);
 
 class Noise {
 	triangle = [
@@ -26,8 +26,8 @@ class Noise {
 		var vnr = this.get(wrapGrid(cubeSub(pos, NORMAL_OFFSETS_R), this.triangleSide));
 		var vpr = this.get(wrapGrid(cubeAdd(pos, NORMAL_OFFSETS_R), this.triangleSide));
 
-		var dq = normalize({ x: 1.0, y: vpq - vnq, z: 0.0 });
-		var dr = normalize({ x: 0.0, y: vpr - vnr, z: 1.0 });
+		var dq = normalize({ x: 0.0002, y: vpq - vnq, z: 0.0000 });
+		var dr = normalize({ x: 0.0000, y: vpr - vnr, z: 0.0002 });
 		
 		return crossProduct(dq, dr);
 	}
@@ -99,4 +99,17 @@ class GradientErosionFractalNoise extends FractalNoise {
 		}
 		return value;
 	}
+}
+
+function isInside(pos, triangleSide) {
+	if (pos.s > 0) return false;
+	if (pos.q < -triangleSide) return false;
+	if (pos.q >= triangleSide * 4) return false;
+	if (pos.s <= -triangleSide * 6) return false;
+	for (var i = 0; i < 4; i++) {
+		var offset = i * triangleSide;
+		if (pos.q - offset >= 0 && pos.s + offset > -triangleSide) return false;
+		if (pos.q - offset < 0 && pos.s + offset < -triangleSide * 2) return false;
+	}
+	return true;
 }

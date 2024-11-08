@@ -151,8 +151,6 @@ function getTriangleY(pos, voxelsSide) {
 
 // Math for grid wrapping is experimental
 function wrapGrid(pos, triangleSide) {
-	if (mainRenderDebug) return pos;
-	
 	var voxelsSide = triangleSide;// + 1;
 	var t = getTriangleCoords(pos, voxelsSide);
 

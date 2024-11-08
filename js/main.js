@@ -220,7 +220,7 @@ function render() {
 		}
 	}
 
-	//if (mainRenderDebug) debugDraw(-minX, -minY);
+	if (mainRenderDebug) debugDraw(-minX, -minY);
 }
 
 function topTriangle(q, r, minX, minY, triangleSide, hexSize) {
@@ -286,17 +286,4 @@ function renderHexagon(x, y, radius) {
 		ctx.lineTo(px, py);
 	}
 	ctx.stroke();
-}
-
-function isInside(pos, triangleSide) {
-	if (pos.s > 0) return false;
-	if (pos.q < -triangleSide) return false;
-	if (pos.q >= triangleSide * 4) return false;
-	if (pos.s <= -triangleSide * 6) return false;
-	for (var i = 0; i < 4; i++) {
-		var offset = i * triangleSide;
-		if (pos.q - offset >= 0 && pos.s + offset > -triangleSide) return false;
-		if (pos.q - offset < 0 && pos.s + offset < -triangleSide * 2) return false;
-	}
-	return true;
 }

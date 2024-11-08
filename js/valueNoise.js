@@ -1,3 +1,6 @@
+const NORMAL_OFFSETS_Q_VAL = axialToCube(0.5, 0.0);
+const NORMAL_OFFSETS_R_VAL = axialToCube(0.0, 0.5);
+
 class ValueNoise extends Noise {
 	get(pos) {
 		_valueUpdateTriangle(pos, this.triangle, this.lastTriangle, this.hexSize, this.triangleSide, this.seed);
@@ -9,6 +12,18 @@ class ValueNoise extends Noise {
 		}
 		
 		return clamp(value, 0.0, 1.0);
+	}
+
+	getNormal(pos) {
+		var vnq = this.get(cubeSub(pos, NORMAL_OFFSETS_Q_VAL));
+		var vpq = this.get(cubeAdd(pos, NORMAL_OFFSETS_Q_VAL));
+		var vnr = this.get(cubeSub(pos, NORMAL_OFFSETS_R_VAL));
+		var vpr = this.get(cubeAdd(pos, NORMAL_OFFSETS_R_VAL));
+
+		var dq = normalize({ x: 1.0, y: vpq - vnq, z: 0.0 });
+		var dr = normalize({ x: 0.0, y: vpr - vnr, z: 1.0 });
+		
+		return crossProduct(dq, dr);
 	}
 }
 
