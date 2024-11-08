@@ -97,6 +97,7 @@ function smoothContrast(value, contrast) {
 function normalize(vector) {
 	var l = vector.x * vector.x + vector.y * vector.y + vector.z * vector.z;
 	if (l > 0.0) {
+		l = Math.sqrt(l);
 		vector.x /= l;
 		vector.y /= l;
 		vector.z /= l;
@@ -110,4 +111,77 @@ function crossProduct(a, b) {
 		y: a.z * b.x - a.x * b.z,
 		z: a.x * b.y - a.y * b.x
 	};
+}
+
+function cubeRotateCW(pos) {
+	return {q: -pos.r, r: -pos.s, s: -pos.q};
+}
+
+function cubeRotateCCW(pos) {
+	return {q: -pos.s, r: -pos.q, s: -pos.r};
+}
+
+function cubeRotateCWCenter(pos, center) {
+	var vec = cubeSub(pos, center);
+	vec = cubeRotateCW(vec);
+	return cubeAdd(vec, center);
+}
+
+function getTriangleCoords(pos, voxelsSide) {
+	var offset = pos.r == -pos.s ? 0.00001 : 0.0;
+	var q = Math.floor(pos.q / voxelsSide);
+	var r = Math.floor(pos.r / voxelsSide + offset);
+	var s = Math.floor(pos.s / voxelsSide - offset);
+
+	var t = (s + q - r) & 1;
+
+	var y = ((r << 1) - t);
+	var x = ((-(s << 1) + t - r - 2 - (y >> 1)) >> 1);
+	
+	return {x: x, y: y};
+}
+
+function getTriangleY(pos, voxelsSide) {
+	var q = Math.floor(pos.q / voxelsSide);
+	var r = Math.floor(pos.r / voxelsSide);
+	var s = Math.floor(pos.s / voxelsSide);
+	var t = (s + q - r) & 1;
+	return ((r << 1) - t);
+}
+
+// Math for grid wrapping is experimental
+function wrapGrid(pos, triangleSide) {
+	if (mainRenderDebug) return pos;
+	
+	var voxelsSide = triangleSide;// + 1;
+	var t = getTriangleCoords(pos, voxelsSide);
+
+	// Up triangles
+	if (pos.r < voxelsSide) {
+		var rotation = Math.floor(-t.y);
+		var index = t.x - (t.y < 0 ? 1 : 0);
+		pos = cubeSub(pos, axialToCube(index * voxelsSide, 0.0));
+		for (var i = 0; i < rotation; i++) {
+			pos = cubeRotateCW(pos);
+		}
+		pos = cubeAdd(pos, axialToCube((index + rotation + 15) % 5 * voxelsSide, 0.0));
+		if (getTriangleY(pos, voxelsSide) < 0) pos = cubeAdd(pos, axialToCube(0.00001, 0.0));
+	}
+	// Down triangles
+	else if (pos.r > voxelsSide * 2) {
+		var rotation = Math.floor(t.y - 3);
+		var index = t.x - 1 + (t.y > 5 ? 1 : 0);
+		pos = cubeSub(pos, axialToCube(index * voxelsSide, voxelsSide * 3));
+		for (var i = 0; i < rotation; i++) {
+			pos = cubeRotateCCW(pos);
+		}
+		pos = cubeAdd(pos, axialToCube((((index + rotation + 16) % 5) - 1) * voxelsSide, voxelsSide * 3));
+		if (getTriangleY(pos, voxelsSide) > 3) pos = cubeSub(pos, axialToCube(0.00001, 0.0));
+	}
+	else {
+		if (pos.q < -voxelsSide) pos = cubeAdd(pos, axialToCube(voxelsSide * 5, 0.0));
+		else if (pos.q >= voxelsSide * 4) pos = cubeSub(pos, axialToCube(voxelsSide * 5, 0.0));
+	}
+
+	return pos;
 }

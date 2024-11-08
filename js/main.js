@@ -220,7 +220,7 @@ function render() {
 		}
 	}
 
-	if (mainRenderDebug) debugDraw(-minX, -minY);
+	//if (mainRenderDebug) debugDraw(-minX, -minY);
 }
 
 function topTriangle(q, r, minX, minY, triangleSide, hexSize) {

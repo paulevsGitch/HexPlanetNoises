@@ -21,10 +21,10 @@ class Noise {
 	}
 
 	getNormal(pos) {
-		var vnq = this.get(cubeSub(pos, NORMAL_OFFSETS_Q));
-		var vpq = this.get(cubeAdd(pos, NORMAL_OFFSETS_Q));
-		var vnr = this.get(cubeSub(pos, NORMAL_OFFSETS_R));
-		var vpr = this.get(cubeAdd(pos, NORMAL_OFFSETS_R));
+		var vnq = this.get(wrapGrid(cubeSub(pos, NORMAL_OFFSETS_Q), this.triangleSide));
+		var vpq = this.get(wrapGrid(cubeAdd(pos, NORMAL_OFFSETS_Q), this.triangleSide));
+		var vnr = this.get(wrapGrid(cubeSub(pos, NORMAL_OFFSETS_R), this.triangleSide));
+		var vpr = this.get(wrapGrid(cubeAdd(pos, NORMAL_OFFSETS_R), this.triangleSide));
 
 		var dq = normalize({ x: 1.0, y: vpq - vnq, z: 0.0 });
 		var dr = normalize({ x: 0.0, y: vpr - vnr, z: 1.0 });
