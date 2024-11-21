@@ -3,7 +3,7 @@ const NORMAL_OFFSETS_R_VAL = axialToCube(0.0, 0.5);
 
 class ValueNoise extends Noise {
 	get(pos) {
-		_valueUpdateTriangle(pos, this.triangle, this.lastTriangle, this.hexSize, this.triangleSide, this.seed);
+		_valueUpdateTriangle(pos, this.triangle, this.lastTriangle, this.triangleSide, this.seed);
 		var bar = cubeToBarycentric(cubeSub(pos, this.triangle[0]), this.lastTriangle.bottom);
 	
 		var value = 0.0;
@@ -29,7 +29,7 @@ class ValueNoise extends Noise {
 
 class SmoothValueNoise extends Noise {
 	get(pos) {
-		_valueUpdateTriangle(pos, this.triangle, this.lastTriangle, this.hexSize, this.triangleSide, this.seed);
+		_valueUpdateTriangle(pos, this.triangle, this.lastTriangle, this.triangleSide, this.seed);
 		var bar = cubeToBarycentric(cubeSub(pos, this.triangle[0]), this.lastTriangle.bottom);
 
 		bar = [
@@ -59,7 +59,7 @@ class RigidSmoothValueNoise extends SmoothValueNoise {
 	}
 }
 
-function _valueUpdateTriangle(pos, triangle, lastTriangle, hexSize, triangleSide, seed) {
+function _valueUpdateTriangle(pos, triangle, lastTriangle, triangleSide, seed) {
 	var q = Math.floor(pos.q);
 	var r = Math.floor(pos.r);
 	var bottomTriangle = (Math.floor(pos.s) + Math.floor(pos.q) - Math.floor(pos.r)) & 1;
@@ -69,7 +69,7 @@ function _valueUpdateTriangle(pos, triangle, lastTriangle, hexSize, triangleSide
 	lastTriangle.r = r;
 	lastTriangle.bottom = bottomTriangle;
 
-	if (bottomTriangle == 1) {
+	if (bottomTriangle === 1) {
 		triangle[0].q = q;
 		triangle[0].r = r;
 		triangle[1].q = q + 1;
@@ -96,22 +96,22 @@ function _valueUpdateTriangle(pos, triangle, lastTriangle, hexSize, triangleSide
 
 function _valueGetRandomVal(point, triangleSide, seed) {
 	var value = 0.0;
-	if ((point.r == 0) || point.r == triangleSide * 3) { // Top and bottom tip
+	if ((point.r === 0) || point.r === triangleSide * 3) { // Top and bottom tip
 		value = random1(seed, -seed);
 	}
 	else if ((point.r < triangleSide) || (point.r > triangleSide * 2)) { // Top and bottom side connections
-		var pq = point.q % triangleSide == 0;
-		if (pq || point.s % triangleSide == 0) {
+		var pq = point.q % triangleSide === 0;
+		if (pq || point.s % triangleSide === 0) {
 			value = random1(seed, point.r - seed);
 		}
 		else value = random1(point.q + seed, point.r - seed);
 	}
-	else if ((point.r == triangleSide || point.r == triangleSide * 2) && point.q % triangleSide == 0) { // Top and bottom connection pentagons
+	else if ((point.r === triangleSide || point.r === triangleSide * 2) && point.q % triangleSide === 0) { // Top and bottom connection pentagons
 		value = random1(seed, point.r - seed);
 	}
 	else { // Normal points + wrapping around
 		var q = point.q;
-		if (q == triangleSide * 4) q = -triangleSide;
+		if (q === triangleSide * 4) q = -triangleSide;
 		value = random1(q + seed, point.r - seed);
 	}
 	return value;

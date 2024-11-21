@@ -5,6 +5,10 @@ const ONE_DIV_THREE = 1.0 / 3.0;
 const TWO_DIV_THREE = 2.0 / 3.0;
 const THREE_DIV_TWO = 3.0 / 2.0;
 const TAU = Math.PI * 2.0;
+const HEX_NEIGHBOURS = [
+	{q:  1, r: -1}, {q:  1, r: 0}, {q: 0, r:  1},
+	{q: -1, r:  1}, {q: -1, r: 0}, {q: 0, r: -1}
+];
 
 function pixelToCubeF(x, y, size) {
 	var q = (SQRT_3_DIV_3 * x - ONE_DIV_THREE * y) / size;
@@ -44,12 +48,37 @@ function cubeAdd(a, b) {
 	}
 }
 
+function cubeRound(pos) {
+	var q = Math.round(pos.q);
+	var r = Math.round(pos.r);
+	var s = Math.round(pos.s);
+
+	var q_diff = Math.abs(q - pos.q);
+	var r_diff = Math.abs(r - pos.r);
+	var s_diff = Math.abs(s - pos.s);
+
+	if (q_diff > r_diff && q_diff > s_diff) q = -r - s;
+	else if (r_diff > s_diff) r = -q - s;
+	else s = -q - r;
+
+	return {q: q, r: r, s: s};
+}
+
 function fract(value) {
 	return value - Math.floor(value);
 }
 
 function random1(x, y) {
 	return fract(2097152.0 * Math.sin(x * 17.0 + y * 59.4));
+}
+
+function random2(x, y) {
+	var rnd = 4096.0 * Math.sin(x * 17.0 + y * 59.4);
+	var result = {x: 0.0, y: 0.0};
+	result.x = fract(512.0 * rnd);
+	rnd *= 0.125;
+	result.y = fract(512.0 * rnd);
+	return result;
 }
 
 function random3(x, y) {
@@ -128,7 +157,7 @@ function cubeRotateCWCenter(pos, center) {
 }
 
 function getTriangleCoords(pos, voxelsSide) {
-	var offset = pos.r == -pos.s ? 0.00001 : 0.0;
+	var offset = pos.r === -pos.s ? 0.00001 : 0.0;
 	var q = Math.floor(pos.q / voxelsSide);
 	var r = Math.floor(pos.r / voxelsSide + offset);
 	var s = Math.floor(pos.s / voxelsSide - offset);
@@ -182,4 +211,18 @@ function wrapGrid(pos, triangleSide) {
 	}
 
 	return pos;
+}
+
+function cubeLinearDist(pos1, pos2) {
+	var p1 = axialToPixel(pos1, 1.0);
+	var p2 = axialToPixel(pos2, 1.0);
+	var dx = p1.x - p2.x;
+	var dy = p1.y - p2.y;
+	return Math.sqrt(dx * dx + dy * dy);
+}
+
+function smoothMin(a, b, k) {
+	k *= 4.0;
+    var h = Math.max(k - Math.abs(a - b), 0.0) / k;
+    return Math.min(a, b) - h * h * k * 0.25;
 }

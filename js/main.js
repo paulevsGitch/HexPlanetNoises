@@ -188,6 +188,10 @@ function getNoise(seed, side) {
 	if(mainNoiseType === "rigid_perlin") return new RigidPerlinNoise(seed, side);
 	if(mainNoiseType === "rigid_value") return new RigidValueNoise(seed, side);
 	if(mainNoiseType === "rigid_smooth_value") return new RigidSmoothValueNoise(seed, side);
+	if(mainNoiseType === "voronoi_f1") return new VoronoiF1Noise(seed, side);
+	if(mainNoiseType === "voronoi_f1/f2") return new VoronoiF1F2Noise(seed, side);
+	if(mainNoiseType === "voronoi_smooth") return new VoronoiSmoothNoise(seed, side);
+	if(mainNoiseType === "voronoi_id") return new VoronoiIDNoise(seed, side);
 	return new PerlinNoise(seed, side);
 }
 

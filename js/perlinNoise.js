@@ -36,7 +36,7 @@ function _perlinUpdateTriangle(pos, triangle, lastTriangle, triangleSide, seed) 
 	lastTriangle.r = r;
 	lastTriangle.bottom = bottomTriangle;
 
-	if (bottomTriangle == 1) {
+	if (bottomTriangle === 1) {
 		triangle[0].q = q;
 		triangle[0].r = r;
 		triangle[1].q = q + 1;
@@ -61,23 +61,23 @@ function _perlinUpdateTriangle(pos, triangle, lastTriangle, triangleSide, seed) 
 
 function _perlinGetRandomVec(point, triangleSide, seed) {
 	var angle = 0.0;
-	if ((point.r == 0) || point.r == triangleSide * 3) { // Top and bottom tip
+	if ((point.r === 0) || point.r === triangleSide * 3) { // Top and bottom tip
 		angle = (seed & 1) * Math.PI;
 	}
 	else if ((point.r < triangleSide) || (point.r > triangleSide * 2)) { // Top and bottom side connections
-		var pq = point.q % triangleSide == 0;
-		if (pq || point.s % triangleSide == 0) {
+		var pq = point.q % triangleSide === 0;
+		if (pq || point.s % triangleSide === 0) {
 			angle = random1(seed, point.r - seed) * TAU;
 			if (pq) angle += Math.PI / 3.0;
 		}
 		else angle = random1(point.q + seed, point.r - seed) * TAU;
 	}
-	else if ((point.r == triangleSide || point.r == triangleSide * 2) && point.q % triangleSide == 0) { // Top and bottom connection pentagons
+	else if ((point.r === triangleSide || point.r === triangleSide * 2) && point.q % triangleSide === 0) { // Top and bottom connection pentagons
 		angle = (seed & 1) * Math.PI;
 	}
 	else { // Normal points + wrapping around
 		var q = point.q;
-		if (q == triangleSide * 4) q = -triangleSide;
+		if (q === triangleSide * 4) q = -triangleSide;
 		angle = random1(q + seed, point.r - seed) * TAU;
 	}
 	return { q: Math.sin(angle), r: Math.cos(angle) };
