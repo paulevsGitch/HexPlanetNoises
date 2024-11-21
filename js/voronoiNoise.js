@@ -53,7 +53,9 @@ class VoronoiF1Noise extends Noise {
 			return cubeAdd(pos, this.randomVert(pos.r + this.seed, pos.r - this.seed, scale));
 		}
 
-		var rnd = random2(pos.q, pos.r);
+		var q = pos.q;
+		if (q === this.triangleSide * 4) q = -this.triangleSide;
+		var rnd = random2(q, pos.r);
 		return cubeAdd(pos, {q: (rnd.x - 0.5) * 0.7, r: (rnd.y - 0.5) * 0.7});
 	}
 }
