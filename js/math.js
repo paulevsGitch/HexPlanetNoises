@@ -64,6 +64,14 @@ function cubeRound(pos) {
 	return {q: q, r: r, s: s};
 }
 
+function cubeRotateCW(pos) {
+	return {q: -pos.r, r: -pos.s, s: -pos.q};
+}
+
+function cubeRotateCCW(pos) {
+	return {q: -pos.s, r: -pos.q, s: -pos.r};
+}
+
 function fract(value) {
 	return value - Math.floor(value);
 }
